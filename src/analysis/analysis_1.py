@@ -1,18 +1,24 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from pathlib import Path
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import LeaveOneOut, cross_val_predict
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
+plt.rcParams['font.family'] = 'Malgun Gothic'   # Windows
+plt.rcParams['axes.unicode_minus'] = False      # 기호 깨짐 방지
+
 # 파일 로드
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data" / "processed"
-OUTPUT_DIR = BASE_DIR / "outputs" / "tables"
+OUTPUT_DIR = BASE_DIR / "data" / "outputs" / "tables"
+
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
 
 df_need = pd.read_csv(DATA_DIR / "need_tidy.csv")
 df_supply = pd.read_csv(DATA_DIR / "supply_tidy.csv")
@@ -220,7 +226,7 @@ plt.figure(figsize=(8, 8))
 color_map = {
     'A: 과잉공급형': '#4CAF50',
     'B: 양호형': '#2196F3',
-    'C: 심각 부족형 ⚠️': '#F44336',
+    'C: 심각 부족형': '#F44336',
     'D: 고위험 대응형': '#FF9800'
 }
 
@@ -232,7 +238,7 @@ for quad, color in color_map.items():
         subset['Need_Index'],
         label=quad,
         color=color,
-        s=80,
+        s=60,
         alpha=0.75
     )
 
