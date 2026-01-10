@@ -1,21 +1,22 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
+plt.rcParams['font.family'] = 'Malgun Gothic'   # Windows
+plt.rcParams['axes.unicode_minus'] = False      # 마이너스 기호 깨짐 방지
+
+#import seaborn as sns
 from pathlib import Path
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import LeaveOneOut, cross_val_predict
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-plt.rcParams['font.family'] = 'Malgun Gothic'   # Windows
-plt.rcParams['axes.unicode_minus'] = False      # 기호 깨짐 방지
-
 # 파일 로드
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data" / "processed"
-OUTPUT_DIR = BASE_DIR / "data" / "outputs" / "tables"
-
+OUTPUT_DIR = BASE_DIR / "outputs" / "tables"
 
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -238,7 +239,7 @@ for quad, color in color_map.items():
         subset['Need_Index'],
         label=quad,
         color=color,
-        s=60,
+        s=80,
         alpha=0.75
     )
 
