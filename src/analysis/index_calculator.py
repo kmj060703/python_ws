@@ -59,9 +59,9 @@ def calculate_supply_index(df_supply_norm):
     # 정렬
     df_sorted = df_supply_norm.sort_values('Supply_Index', ascending=False)
     
-    print("\n📈 Supply Index TOP 10 (인프라 부족한 순):")
+    print("\n📈 Supply Index TOP 10 (인프라 풍부한 순):")
     print(df_sorted[['district', 'Supply_Index']].head(10).to_string(index=False))
-    print("\n📉 Supply Index BOTTOM 5 (인프라 풍부한 순):")
+    print("\n📉 Supply Index BOTTOM 5 (인프라 부족한 순):")
     print(df_sorted[['district', 'Supply_Index']].tail(5).to_string(index=False))
     print(f"\n평균: {df_supply_norm['Supply_Index'].mean():.2f}")
     print(f"최대: {df_supply_norm['Supply_Index'].max():.2f}")
@@ -118,53 +118,73 @@ def calculate_gap_index(df, df_need_norm, df_supply_norm):
     
     return df_final, median_need, median_supply
 
-
 def save_rankings(df, df_need_norm, df_supply_norm):
-    """순위 및 세부 데이터 저장"""
-    from config import NEED_VARS
-    
+    """
+    1) Need Index 순위
+    2) Supply Index 순위
+    3) 구별 NEED 상위 3개 지표
+    """
+    from config import NEED_VARS, OUTPUT_DIR
+    import pandas as pd
+
+    # =========================
     # Need Index 순위
+    # =========================
     need_rank_df = (
         df_need_norm[['district', 'Need_Index']]
         .sort_values('Need_Index', ascending=False)
         .reset_index(drop=True)
     )
     need_rank_df['rank'] = need_rank_df.index + 1
-    need_rank_out = OUTPUT_DIR / "need_index_ranking.csv"
-    need_rank_df.to_csv(need_rank_out, index=False, encoding="utf-8-sig")
-    print("\n📊 Need Index 순위 CSV 저장 완료")
-    print(need_rank_df.head(10))
-    print(f"저장 위치: {need_rank_out}")
-    
+    need_rank_df.to_csv(
+        OUTPUT_DIR / "need_index_ranking.csv",
+        index=False,
+        encoding="utf-8-sig"
+    )
+
+    # =========================
     # Supply Index 순위
+    # =========================
     supply_rank_df = (
         df_supply_norm[['district', 'Supply_Index']]
         .sort_values('Supply_Index', ascending=False)
         .reset_index(drop=True)
     )
     supply_rank_df['rank'] = supply_rank_df.index + 1
-    supply_rank_out = OUTPUT_DIR / "supply_index_ranking.csv"
-    supply_rank_df.to_csv(supply_rank_out, index=False, encoding="utf-8-sig")
-    print("\n🏥 Supply Index 순위 CSV 저장 완료")
-    print(supply_rank_df.head(10))
-    print(f"저장 위치: {supply_rank_out}")
-    
-   # Need 지표별 TOP 3 구
-    need_top3_rows = []
-    for var in NEED_VARS:
-        temp = (
-            df[['district', var]]
-            .sort_values(var, ascending=False)
-            .head(3)
-            .copy()
-        )
-        temp['need_variable'] = var
-        temp['rank'] = range(1, 4)
-        need_top3_rows.append(temp[['need_variable', 'rank', 'district']])
-    
-    need_top3_df = pd.concat(need_top3_rows, ignore_index=True)
-    need_top3_out = OUTPUT_DIR / "need_variables_top3_by_district.csv"
-    need_top3_df.to_csv(need_top3_out, index=False, encoding="utf-8-sig")
-    print("\n📌 Need 지표별 상위 3개 구 저장 완료")
-    print(need_top3_df.head(10))
-    print(f"저장 위치: {need_top3_out}")
+    supply_rank_df.to_csv(
+        OUTPUT_DIR / "supply_index_ranking.csv",
+        index=False,
+        encoding="utf-8-sig"
+    )
+
+    # =========================
+    # 구별 NEED 상위 3개 지표
+    # =========================
+    rows = []
+    for _, row in df_need_norm.iterrows():
+        district = row['district']
+
+        scores = {
+            var.replace('_norm', ''): row[var]
+            for var in df_need_norm.columns
+            if var.endswith('_norm') and var != 'Need_Index'
+        }
+
+        top3 = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:3]
+
+        for rank, (var, score) in enumerate(top3, start=1):
+            rows.append({
+                'district': district,
+                'rank': rank,
+                'need_variable': var,
+                'score': score
+            })
+
+    need_top3_df = pd.DataFrame(rows)
+    need_top3_df.to_csv(
+        OUTPUT_DIR / "district_need_top3.csv",
+        index=False,
+        encoding="utf-8-sig"
+    )
+
+    print("📊 순위 테이블 저장 완료")
