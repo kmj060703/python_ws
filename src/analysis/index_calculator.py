@@ -1,4 +1,6 @@
 """
+index_calculator.py
+
 Need, Supply, Gap Index 계산
 """
 import pandas as pd
@@ -6,18 +8,18 @@ from config import WEIGHTS_NEED, WEIGHTS_SUPPLY, OUTPUT_DIR
 
 
 def calculate_need_index(df_need_norm):
-    """Need Index 계산"""
-    print("\n" + "=" * 60)
-    print("📊 Need Index 계산")
-    print("=" * 60)
+   
+    """
+
+    Need Index 계산
+
+    MHVI – Need Index 순위
+    목적: 각 지역의 구조적 정신건강 위험 수준을 측정
+    계산식: Need_Index = 정규화된 위험 지표들의 가중합 (0–100 척도)
+    해석: Need_Index가 높을수록 해당 지역의 취약도와 정책 개입 필요성이 큼
+    순위: 1위 = 가장 취약한 지역
     
-    print("가중치:")
-    total_weight = 0
-    for var, weight in WEIGHTS_NEED.items():
-        print(f"  {var:45s}: {weight:5.1%}")
-        total_weight += weight
-    print(f"\n총 가중치 합: {total_weight:.1%}")
-    
+    """
     # Need Index 계산
     df_need_norm['Need_Index'] = 0
     for var, weight in WEIGHTS_NEED.items():
@@ -39,22 +41,23 @@ def calculate_need_index(df_need_norm):
 
 
 def calculate_supply_index(df_supply_norm):
-    """Supply Index 계산"""
-    print("\n" + "=" * 60)
-    print("🏥 Supply Index 계산")
-    print("=" * 60)
-    
-    print("가중치:")
-    total_weight = 0
-    for var, weight in WEIGHTS_SUPPLY.items():
-        print(f"  {var:50s}: {weight:5.1%}")
-        total_weight += weight
-    print(f"\n총 가중치 합: {total_weight:.1%}")
-    
-    # Supply Index 계산 (낮을수록 문제 = 역전)
+
+    """
+
+    Supply Index 계산
+
+    MHVI – 공급 결핍(Supply Deficit) 지수 순위
+    목적: 지역별 정신건강 인프라 및 서비스의 부족 정도를 측정
+    계산식: Supply_Index = (100 - 정규화된 공급 지표)의 가중합
+    해석: Supply_Index가 높을수록 해당 지역의 서비스 제공 수준이 더 부족함
+    순위: 1위 = 가장 지원이 부족한 지역
+
+    """
+    print("\n" + "=" * 60); print("🏥 Supply Index 계산"); print("=" * 60); 
+
     df_supply_norm['Supply_Index'] = 0
     for var, weight in WEIGHTS_SUPPLY.items():
-        df_supply_norm['Supply_Index'] += (100 - df_supply_norm[var]) * weight
+        df_supply_norm['Supply_Index'] += df_supply_norm[var] * weight
     
     # 정렬
     df_sorted = df_supply_norm.sort_values('Supply_Index', ascending=False)
@@ -72,10 +75,25 @@ def calculate_supply_index(df_supply_norm):
 
 
 def calculate_gap_index(df, df_need_norm, df_supply_norm):
-    """Gap Index 계산 및 4사분면 분류"""
-    print("\n" + "=" * 60)
-    print("🎯 Gap Index 계산 (Need - Supply)")
-    print("=" * 60)
+    
+    """
+    Gap Index 계산 및 4사분면 분류
+    
+    
+    지역별 정책 개입 우선순위를 계산하는 Gap Index와 4사분면 분류 함수
+
+    Gap Index = Need_Index - Supply_Index
+
+    의미:
+    - Need_Index   : 해당 지역의 정신건강 위험 수준
+    - Supply_Index : 해당 지역의 정신건강 인프라 결핍 수준
+    - Gap_Index    : '위험 대비 방치 정도'
+                     → 위험은 큰데 지원이 부족할수록 값이 커짐
+                     → 정책 개입이 시급한 지역을 의미
+    
+    """
+
+    print("\n" + "=" * 60); print("🎯 Gap Index 계산 (Need - Supply)"); print("=" * 60)
     
     # 통합
     df_final = df[['district']].copy()
@@ -100,15 +118,26 @@ def calculate_gap_index(df, df_need_norm, df_supply_norm):
     median_need = df_final['Need_Index'].median()
     median_supply = df_final['Supply_Index'].median()
     
+    # def classify_quadrant(row):
+    #     if row['Need_Index'] >= median_need and row['Supply_Index'] >= median_supply:
+    #         return 'D: 고위험 대응형'
+    #     elif row['Need_Index'] >= median_need and row['Supply_Index'] < median_supply:
+    #         return 'C: 심각 부족형 ⚠️'
+    #     elif row['Need_Index'] < median_need and row['Supply_Index'] >= median_supply:
+    #         return 'B: 양호형'
+    #     else:
+    #         return 'A: 과잉공급형'
+
     def classify_quadrant(row):
-        if row['Need_Index'] >= median_need and row['Supply_Index'] >= median_supply:
-            return 'D: 고위험 대응형'
-        elif row['Need_Index'] >= median_need and row['Supply_Index'] < median_supply:
-            return 'C: 심각 부족형 ⚠️'
-        elif row['Need_Index'] < median_need and row['Supply_Index'] >= median_supply:
-            return 'B: 양호형'
+        if row['Need_Index'] >= median_need and row['Supply_Index'] < median_supply:
+            return 'C'
+        elif row['Need_Index'] >= median_need and row['Supply_Index'] >= median_supply:
+            return 'D'
+        elif row['Need_Index'] < median_need and row['Supply_Index'] < median_supply:
+            return 'B'
         else:
-            return 'A: 과잉공급형'
+            return 'A'
+
     
     df_final['Quadrant'] = df_final.apply(classify_quadrant, axis=1)
     
@@ -157,9 +186,20 @@ def save_rankings(df, df_need_norm, df_supply_norm):
         encoding="utf-8-sig"
     )
 
+
     # =========================
     # 구별 NEED 상위 3개 지표
     # =========================
+
+    """
+    
+    MHVI – 지역별 주요 위험 요인 상위 3개
+    목적: 각 지역의 Need Index를 구성하는 핵심 위험 요인을 식별
+    need_variable: 원본 위험 지표 이름 (정규화 이전 변수)
+    score: 정규화된 값 (0–100), 값이 클수록 해당 요인이 더 심각함
+    rank: 1위 = 해당 지역에서 가장 큰 영향을 미치는 위험 요인
+    
+    """
     rows = []
     for _, row in df_need_norm.iterrows():
         district = row['district']

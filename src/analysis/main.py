@@ -1,4 +1,6 @@
 """
+main.py
+
 메인 실행 스크립트
 """
 from config import OUTPUT_DIR
@@ -10,7 +12,7 @@ from index_calculator import (
     save_rankings
 )
 from visualization import plot_quadrant_chart
-from policy_simulation import run_policy_simulation
+from ai_diagnosis import run_ai_diagnosis
 
 
 def main():
@@ -49,7 +51,7 @@ def main():
     print(f"\n저장된 변수:")
     print(f"  - district (구)")
     print(f"  - Need_Index (위험도)")
-    print(f"  - Supply_Index (인프라 부족도)")
+    print(f"  - Supply_Index (인프라 공급도)")
     print(f"  - Gap_Index (격차)")
     print(f"  - Quadrant (4사분면 분류)")
     print("\n🎉 분석 완료!")
@@ -57,13 +59,10 @@ def main():
     
     # 8. 시각화
     plot_quadrant_chart(df_final, median_need, median_supply)
-    
-    # 9. 정책 시뮬레이션
-    print("\n" + "=" * 60)
-    print("🤖 정책 시뮬레이션 시작")
-    print("=" * 60)
-    run_policy_simulation()
-    
+
+    # 9. AI 사각지대 분석
+    df_final, rf_model = run_ai_diagnosis(df, df_final)
+
     print("\n" + "=" * 60)
     print("✅ 전체 파이프라인 완료!")
     print("=" * 60)

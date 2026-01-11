@@ -1,5 +1,8 @@
 """
+config.py
+
 프로젝트 설정 및 경로 관리
+
 """
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -43,7 +46,7 @@ SUPPLY_VARS = [
     'cultural_satisfaction'
 ]
 
-# Need 가중치 (총합 100%)
+# Need 가중치 (총합 1)
 WEIGHTS_NEED = {
     'suicide_rate_norm': 0.12,
     'depression_experience_rate_norm': 0.09,
@@ -57,7 +60,7 @@ WEIGHTS_NEED = {
     'old_dependency_ratio_norm': 0.11
 }
 
-# Supply 가중치 (총합 100%)
+# Supply 가중치 (총합 1)
 WEIGHTS_SUPPLY = {
     'health_promotion_centers_count_norm': 0.20,
     'medical_institutions_count_norm': 0.20,

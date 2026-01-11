@@ -1,4 +1,6 @@
 """
+data_loader.py
+
 데이터 로드 및 기본 전처리
 """
 import pandas as pd
@@ -33,7 +35,7 @@ def load_data():
     return df
 
 
-def normalize_to_100(series, direction='positive'):
+def normalize_to_100(series):
     """
     0~100점으로 정규화
     
@@ -50,12 +52,7 @@ def normalize_to_100(series, direction='positive'):
     np.array : 정규화된 값 (0~100)
     """
     scaler = MinMaxScaler(feature_range=(0, 100))
-    
-    if direction == 'positive':
-        normalized = scaler.fit_transform(series.values.reshape(-1, 1))
-    else:
-        normalized = 100 - scaler.fit_transform(series.values.reshape(-1, 1))
-    
+    normalized = scaler.fit_transform(series.values.reshape(-1, 1))
     return normalized.flatten()
 
 
@@ -68,13 +65,13 @@ def normalize_data(df):
     # Need 정규화
     df_need_norm = df[['district']].copy()
     for var in NEED_VARS:
-        df_need_norm[f'{var}_norm'] = normalize_to_100(df[var], direction='positive')
+        df_need_norm[f'{var}_norm'] = normalize_to_100(df[var])
         print(f"  ✅ {var:40s} → 정규화 완료")
     
     # Supply 정규화
     df_supply_norm = df[['district']].copy()
     for var in SUPPLY_VARS:
-        df_supply_norm[f'{var}_norm'] = normalize_to_100(df[var], direction='negative')
+        df_supply_norm[f'{var}_norm'] = normalize_to_100(df[var])
         print(f"  ✅ {var:40s} → 정규화 완료")
     
     print("\n정규화 결과 샘플:")
