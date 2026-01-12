@@ -1,0 +1,4 @@
+﻿policy,mean_gap_delta,median_gap_delta,best_count
+health_promotion_centers_count +1,1.5238095238095253,1.5873015873015888,24
+medical_institutions_count +10%,0.2702869536202867,0.25233566900232773,1
+parks_count +10%,0.8821034775233252,0.916030534351151,0
