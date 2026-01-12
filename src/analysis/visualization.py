@@ -53,7 +53,7 @@ def plot_quadrant_chart(df_final, median_need, median_supply):
     # 라벨 & 제목
     plt.xlabel("Supply Index (인프라 공급도)")
     plt.ylabel("Need Index (위험도)")
-    plt.title("Need–Supply 기반 4사분면 분류 (Gap Index 상위 10개 강조)")
+    plt.title("Need–Supply 기반 4사분면 분류")
     
     plt.legend()
     plt.grid(alpha=0.3)
