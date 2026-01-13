@@ -68,10 +68,18 @@ def draw_gap_scatter(df):
             hover_data=["Gap_Index"], # 툴팁에 Gap 정보 표시
             color="Quadrant",
             color_discrete_map={
-                'D': '#FF4B4B', # 고위험
-                'C': '#FF8C00', # 심각 부족
-                'B': '#4CAF50', # 양호
-                'A': '#2196F3'  # 과잉 공급
+                'D: 고위험 대응형': '#FF4B4B', # 고위험
+                'C: 심각 부족형 ⚠️': '#FF8C00', # 심각 부족
+                'B: 양호형': '#4CAF50', # 양호
+                'A: 과잉공급형': '#2196F3'  # 과잉 공급
+            },
+            category_orders={
+                "Quadrant": [
+                    "A: 과잉공급형", 
+                    "B: 양호형", 
+                    "C: 심각 부족형 ⚠️", 
+                    "D: 고위험 대응형"
+                ]
             },
             labels={
                 "Supply_Index": "공급 수준 (Supply Index)", 
@@ -221,16 +229,46 @@ def draw_shap_waterfall(df_shap, target_gu):
     if filtered.empty:
         return None
 
+    # 한글 매핑 정보
+    label_map = {
+        "suicide_rate": "자살률",
+        "depression_experience_rate": "우울감 경험률",
+        "perceived_stress_rate": "스트레스 인지율",
+        "high_risk_drinking_rate": "고위험 음주율",
+        "unmet_medical_need_rate": "미충족 의료 필요율",
+        "elderly_population_rate": "노인 인구 비율",
+        "old_dependency_ratio": "노년부양비",
+        "single_households": "1인 가구 수",
+        "basic_livelihood_recipients": "기초생활수급자 수",
+        "unemployment_rate": "실업률",
+        "welfare_budget_per_capita": "1인당 복지예산",
+        "medical_institutions_count": "의료기관 수",
+        "health_promotion_centers_count": "건강증진센터 수",
+        "elderly_leisure_welfare_facilities_count": "노인 여가복지시설",
+        "in_home_elderly_welfare_facilities_count": "재가노인복지시설",
+        "parks_count": "공원 수",
+        "libraries_count": "도서관 수",
+        "public_sports_facilities_count": "공공 체육시설 수",
+        "cultural_satisfaction": "문화생활 만족도"
+    }
+
     gu_data = filtered.drop(['district', 'Inefficiency'], axis=1).T
     gu_data.columns = ['Effect']
+    
+    # 인덱스(영문 컬럼명)를 한글로 변환
+    gu_data.index = [label_map.get(col, col) for col in gu_data.index]
+    
     gu_data = gu_data.sort_values(by='Effect')
 
     fig = px.bar(
         gu_data, x='Effect', y=gu_data.index, orientation='h',
         color='Effect', color_continuous_scale='RdBu_r',
-        labels={'Effect': '기여도 (빨간색=위험)', 'index': '지표'}
+        labels={'Effect': '기여도 (빨간색=위험)', 'y': '지표'}
     )
-    fig.update_layout(dragmode=False)
+    fig.update_layout(
+        dragmode=False,
+        yaxis_title="진단 지표"
+    )
     fig.update_xaxes(fixedrange=True)
     fig.update_yaxes(fixedrange=True)
     return fig

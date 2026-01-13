@@ -516,13 +516,5 @@ for idx, row in df.iterrows():
 recommend_df = pd.DataFrame(rows).sort_values("rec1_delta")  # 1순위 개선 큰 구 먼저
 print("\n=== 구별 정책 추천 TOP-3 (자살률 예측 감소 기준) ==="); print(recommend_df.head(10).to_string(index=False))
 
-
-policy_out = OUTPUT_DIR / "policy_recommendations_rf.csv"
-
-recommend_df.to_csv(
-    policy_out,
-    index=False,
-    encoding="utf-8-sig"
-)
-
-print(f"\n저장 완료: {policy_out}")
+print(f"\n기존 RandomForest 기반 정책 시뮬레이션은 중단되었으며,")
+print(f"이제 'need_driver.py'에서 생성된 정책 제언 데이터를 사용합니다.")

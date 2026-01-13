@@ -18,7 +18,7 @@ MHVI_PATH = os.path.join(ROOT_DIR, "data", "processed", "mhvi_final_result.csv")
 # 데이터 결과물 경로
 RANK_PATH = os.path.join(ROOT_DIR, "data", "outputs", "tables", "ai_blindspot_ranking.csv")
 SHAP_PATH = os.path.join(ROOT_DIR, "data", "outputs", "tables", "ai_blindspot_shap.csv")
-POLICY_PATH = os.path.join(ROOT_DIR, "data", "outputs", "tables", "policy_recommendations_rf.csv")
+POLICY_PATH = os.path.join(ROOT_DIR, "data", "outputs", "recommend_policy", "need_policy_recommendation_by_district.csv")
 
 # 2. 페이지 설정
 st.set_page_config(
@@ -286,30 +286,37 @@ else:
                 selected_gu = st.selectbox("구 선택", df_poly['district'].unique())
                 res = df_poly[df_poly['district'] == selected_gu].iloc[0]
                 
-                # 정책 변수명 한글 매핑
-                policy_map = {
-                    "welfare_budget_per_capita": "1인당 복지 예산 증액",
-                    "cultural_satisfaction": "문화 환경 만족도 개선",
-                    "parks_count": "공원 인프라 확충",
-                    "libraries_count": "도서관 시설 확충",
-                    "public_sports_facilities_count": "공공 체육 시설 확충",
-                    "medical_institutions_count": "의료 기관 접근성 개선",
-                    "health_promotion_centers_count": "건강 증진 센터 확충",
-                    "elderly_leisure_welfare_facilities_count": "노인 여가 복지 시설 확충",
-                    "in_home_elderly_welfare_facilities_count": "재가 노인 복지 시설 확충"
+                # 변수명 한글 매핑 (원인 지표용)
+                factor_map = {
+                    "suicide_rate": "자살률",
+                    "depression_experience_rate": "우울감 경험률",
+                    "perceived_stress_rate": "스트레스 인지율",
+                    "high_risk_drinking_rate": "고위험 음주율",
+                    "unmet_medical_need_rate": "미충족 의료율",
+                    "unemployment_rate": "실업률",
+                    "elderly_population_rate": "노인 인구 비율",
+                    "old_dependency_ratio": "노년 부양비",
+                    "single_households": "1인 가구 수",
+                    "basic_livelihood_recipients": "기초생활수급자 수"
                 }
-                
-                # 1순위 추천 정책 가져오기 (없으면 원본 유지)
-                rec_var = res.get('rec1_lever', '')
-                policy_name = policy_map.get(rec_var, rec_var if rec_var else "인프라 보완")
 
-                st.success(f"### {selected_gu} 처방")
-                st.metric("추천 정책", policy_name)
+                st.success(f"### {selected_gu} 맞춤형 정책 제언")
                 
-                # 상세 설명 (선택적)
-                st.info(f"💡 **{policy_name}**을(를) 우선적으로 고려하면 자살률 감소 효과가 가장 클 것으로 예측됩니다.")
+                # 3가지 정책 방향 표시
+                for i in range(1, 4):
+                    factor_key = f'top{i}_factor'
+                    policy_key = f'policy_direction_{i}'
+                    
+                    if factor_key in res and policy_key in res:
+                        factor_raw = res[factor_key]
+                        factor_name = factor_map.get(factor_raw, factor_raw)
+                        policy_desc = res[policy_key]
+                        
+                        with st.expander(f"**순위 {i}: {factor_name} 기반 정책**", expanded=(i==1)):
+                            st.write(f"🎯 **주요 타겟 지표:** {factor_name}")
+                            st.info(f"💡 **정책 제언:**\n\n{policy_desc}")
             else:
-                st.warning("시나리오 데이터 없음")
+                st.warning("정책 제언 데이터(need_policy_recommendation_by_district.csv)를 찾을 수 없습니다.")
 
         elif page == 'radar':
             st.markdown("<h1 class='page-title'>📈 자치구별 세부 지표 비교</h1>", unsafe_allow_html=True)
