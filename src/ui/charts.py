@@ -2,6 +2,8 @@ import folium
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
+import branca.colormap as cm
+import json
 
 # 1. MHVI 지도 (Need Index 시각화)
 def draw_mhvi_map(geo_data, data_df):
@@ -22,38 +24,73 @@ def draw_mhvi_map(geo_data, data_df):
     """))
     m.fit_bounds(seoul_bounds) # 서울 영역에 맞게 자동 줌/이동
 
-    # 데이터 컬럼 자동 감지
+    # 데이터 컬럼 자동 감지 및 설정
     if 'Need_Index' in data_df.columns:
         col_to_plot = "Need_Index"
         legend_title = "정신건강 취약 지수 (높음=위험)"
-        fill_color = "YlOrRd"  # 위험할수록 붉은색
-        
-        # 툴팁용 컬럼 이름 통일 (district -> name 변환 불필요, GeoJSON과 매칭은 key_on으로 해결)
-        # 하지만 data_df에 'name'이 없고 'district'만 있을 수 있음.
-        if 'name' not in data_df.columns and 'district' in data_df.columns:
-            data_df['name'] = data_df['district']
-            
+        # 색상 스케일 (YlOrRd)
+        colors = ['#FFFFB2', '#FECC5C', '#FD8D3C', '#F03B20', '#BD0026']
     else:
         col_to_plot = "center_count"
         legend_title = "정신건강 인프라 수"
-        fill_color = "PuBu" # 인프라 많을수록 파란색 (기존 YlOrRd에서 변경 고려 가능하지만 유지)
+        colors = ['#f1eef6', '#bdc9e1', '#74a9cf', '#2b8cbe', '#045a8d'] # PuBu
 
-    folium.Choropleth(
-        geo_data=geo_data,
-        data=data_df,
-        columns=["name", col_to_plot],
-        key_on="feature.properties.SIG_KOR_NM",
-        fill_color=fill_color,
-        fill_opacity=0.7,
-        line_opacity=0.2,
-        legend_name=legend_title
-    ).add_to(m)
+    # 구 이름 컬럼 확보
+    if 'name' not in data_df.columns and 'district' in data_df.columns:
+        data_df = data_df.copy()
+        data_df['name'] = data_df['district']
+
+    # 데이터 매핑을 위한 딕셔너리 생성
+    data_dict = data_df.set_index('name')[col_to_plot].to_dict()
+
+    # GeoJSON properties에 데이터 병합
+    for feature in geo_data['features']:
+        gu_name = feature['properties'].get('SIG_KOR_NM')
+        if gu_name in data_dict:
+            feature['properties']['value'] = data_dict[gu_name]
+        else:
+            feature['properties']['value'] = 0
+
+    # 색상 맵 생성
+    vmin = data_df[col_to_plot].min()
+    vmax = data_df[col_to_plot].max()
+    colormap = cm.LinearColormap(colors=colors, vmin=vmin, vmax=vmax, caption=legend_title)
     
+    # 스타일 함수
+    def style_function(feature):
+        value = feature['properties'].get('value', 0)
+        return {
+            'fillColor': colormap(value),
+            'color': 'black',
+            'weight': 1,
+            'fillOpacity': 0.7
+        }
+
+    # 하이라이트 함수 (마우스 오버 시)
+    def highlight_function(feature):
+        return {
+            'fillColor': '#ffffff',
+            'color': 'black',
+            'weight': 3,
+            'fillOpacity': 0.9,
+        }
+
+    # GeoJson 레이어 추가 (클릭 이벤트 활성화)
     folium.GeoJson(
         geo_data,
-        style_function=lambda x: {"fillColor": "transparent", "color": "black", "weight": 0.5},
-        tooltip=folium.GeoJsonTooltip(fields=["SIG_KOR_NM"], aliases=["지역구:"], localize=True)
+        style_function=style_function,
+        highlight_function=highlight_function,
+        tooltip=folium.GeoJsonTooltip(
+            fields=['SIG_KOR_NM', 'value'],
+            aliases=['지역구:', f'{legend_title}:'],
+            localize=True,
+            sticky=False
+        )
     ).add_to(m)
+
+    # 범례 추가
+    colormap.add_to(m)
+
     return m
 
 # 2. Gap 분석 산점도 (MHVI 데이터 반영)
@@ -213,7 +250,7 @@ def draw_ai_blindspot_bar(df_rank):
         df_rank.head(10), 
         x='Inefficiency', y='district', orientation='h',
         color='Inefficiency', color_continuous_scale='Reds',
-        labels={'Inefficiency': '방치 지수', 'district': '자치구'}
+        labels={'Inefficiency': '관리 필요 지수', 'district': '자치구'}
     )
     fig.update_layout(
         yaxis={'categoryorder':'total ascending'},
@@ -263,7 +300,7 @@ def draw_shap_waterfall(df_shap, target_gu):
     fig = px.bar(
         gu_data, x='Effect', y=gu_data.index, orientation='h',
         color='Effect', color_continuous_scale='RdBu_r',
-        labels={'Effect': '기여도 (빨간색=위험)', 'y': '지표'}
+        labels={'Effect': '위험 영향도 (빨간색=위험)', 'y': '지표'}
     )
     fig.update_layout(
         dragmode=False,

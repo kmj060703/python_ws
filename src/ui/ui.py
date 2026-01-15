@@ -197,7 +197,7 @@ if st.session_state.current_page == "home":
     st.markdown("<div class='title-divider'></div>", unsafe_allow_html=True)
 
     cards = [
-        ("mhvi", "🗺️", "MHVI 지도", "서울시 25개 자치구의 정신건강 취약 지수 시각화"),
+        ("mhvi", "🗺️", "정신건강 취약 지도", "서울시 25개 자치구의 정신건강 취약 지수 시각화"),
         ("gap", "📊", "Gap 분석", "수요-공급 격차 및 인프라 부족 지역 분석"),
         ("ai_diagnosis", "🤖", "AI 사각지대", "공급 대비 과도 위험 지역 및 원인 진단"),
         ("policy_sim", "📈", "정책 시나리오", "구별 맞춤형 정책 처방 및 개선 효과 예측"),
@@ -238,14 +238,85 @@ else:
         page = st.session_state.current_page
 
         if page == 'mhvi':
-            st.markdown("<h1 class='page-title'>🗺️ MHVI 지도</h1>", unsafe_allow_html=True)
-            if mhvi_df is not None:
-                m = charts.draw_mhvi_map(geo_data, mhvi_df)
-                st_folium(m, width="100%", height=600, returned_objects=[], key="map_mhvi")
-            else:
+            st.markdown("<h1 class='page-title'>🗺️ 정신건강 취약 지도</h1>", unsafe_allow_html=True)
+            st.info("💡 **지도의 각 구를 클릭**하면 해당 지역의 상세 분석 페이지로 이동합니다.")
+            
+            target_df = mhvi_df if mhvi_df is not None else infra_data
+            
+            if mhvi_df is None:
                 st.warning("MHVI 데이터(mhvi_final_result.csv)가 없어 기본 인프라 지도를 표시합니다.")
-                m = charts.draw_mhvi_map(geo_data, infra_data)
-                st_folium(m, width="100%", height=600, returned_objects=[], key="map_mhvi_infra")
+                
+            m = charts.draw_mhvi_map(geo_data, target_df)
+            
+            # 클릭 이벤트 감지를 위해 returned_objects 설정
+            map_output = st_folium(m, width="100%", height=600, returned_objects=["last_object_clicked"], key="map_mhvi")
+
+            # 디버깅: 데이터 로드 상태 및 클릭 정보 확인
+            if radar_df is not None:
+                st.sidebar.success("✅ 상세 데이터 로드 완료")
+            else:
+                st.sidebar.error("❌ 상세 데이터 로드 실패")
+
+            # --- 좌표 기반 구 찾기 함수 (GeoJSON 파싱) ---
+            def is_point_in_polygon(x, y, poly):
+                """Ray-casting algorithm to check if point (x,y) is in polygon"""
+                n = len(poly)
+                inside = False
+                p1x, p1y = poly[0]
+                for i in range(n + 1):
+                    p2x, p2y = poly[i % n]
+                    if y > min(p1y, p2y):
+                        if y <= max(p1y, p2y):
+                            if x <= max(p1x, p2x):
+                                if p1y != p2y:
+                                    xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                                if p1x == p2x or x <= xinters:
+                                    inside = not inside
+                    p1x, p1y = p2x, p2y
+                return inside
+
+            def find_gu_by_coord(geo_data, lat, lng):
+                point_x, point_y = lng, lat # GeoJSON uses (lng, lat)
+                
+                for feature in geo_data['features']:
+                    gu_name = feature['properties'].get('SIG_KOR_NM')
+                    geometry = feature['geometry']
+                    geom_type = geometry['type']
+                    coords = geometry['coordinates']
+                    
+                    if geom_type == 'Polygon':
+                        # Polygon: [ [ring1], [ring2], ... ] - 첫 번째 링이 외곽선
+                        if is_point_in_polygon(point_x, point_y, coords[0]):
+                            return gu_name
+                    elif geom_type == 'MultiPolygon':
+                        # MultiPolygon: [ [[ring]], [[ring]], ... ]
+                        for poly in coords:
+                            if is_point_in_polygon(point_x, point_y, poly[0]):
+                                return gu_name
+                return None
+            
+            # ---------------------------------------------
+
+            if map_output['last_object_clicked']:
+               clicked_lat = map_output['last_object_clicked'].get('lat')
+               clicked_lng = map_output['last_object_clicked'].get('lng')
+               
+               # 1. 속성 정보로 시도
+               properties = map_output['last_object_clicked'].get('properties', {})
+               clicked_gu = properties.get('SIG_KOR_NM') or properties.get('name') or properties.get('SIG_ENG_NM')
+               
+               # 2. 좌표로 시도 (속성 정보 없을 경우)
+               if not clicked_gu and clicked_lat and clicked_lng:
+                   clicked_gu = find_gu_by_coord(geo_data, clicked_lat, clicked_lng)
+
+               if clicked_gu:
+                   st.success(f"'{clicked_gu}' 선택됨! 상세 페이지로 이동합니다.")
+                   st.session_state['selected_gu_from_map'] = clicked_gu
+                   st.session_state.current_page = 'radar'
+                   st.query_params['page'] = 'radar'
+                   st.rerun()
+               else:
+                   st.warning("선택한 위치에서 지역구 정보를 찾을 수 없습니다. 정확한 구역을 클릭해주세요.")
 
         elif page == 'gap':
             st.markdown("<h1 class='page-title'>📊 수요-공급 격차 분석</h1>", unsafe_allow_html=True)
@@ -321,7 +392,16 @@ else:
         elif page == 'radar':
             st.markdown("<h1 class='page-title'>📈 자치구별 세부 지표 비교</h1>", unsafe_allow_html=True)
             if radar_df is not None:
-                selected_gu = st.selectbox("자치구 선택", radar_df['district'].unique())
+                gu_list = radar_df['district'].unique().tolist()
+                default_index = 0
+                
+                # 지도에서 클릭해서 넘어온 경우 해당 구 선택
+                if 'selected_gu_from_map' in st.session_state and st.session_state.selected_gu_from_map in gu_list:
+                    default_index = gu_list.index(st.session_state.selected_gu_from_map)
+                    # 한 번 사용 후 초기화 (선택사항, 여기선 유지)
+                    # del st.session_state['selected_gu_from_map'] 
+                
+                selected_gu = st.selectbox("자치구 선택", gu_list, index=default_index)
                 fig = charts.draw_radar_chart(radar_df, selected_gu)
                 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
             else:
