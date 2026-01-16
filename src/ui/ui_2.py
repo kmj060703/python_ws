@@ -189,6 +189,28 @@ st.markdown("""
     color: #0f172a !important;
 }
 
+/* selectbox 스타일 개선 */
+[data-baseweb="select"] {
+    background-color: #ffffff !important;
+}
+
+[data-baseweb="select"] > div {
+    background-color: #ffffff !important;
+    border: 2px solid #14b8a6 !important;
+    border-radius: 8px !important;
+}
+
+[data-baseweb="select"] > div:hover {
+    border-color: #0d9488 !important;
+}
+
+/* selectbox 텍스트 */
+[data-baseweb="select"] span,
+[data-baseweb="select"] div {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+}
+
 .streamlit-expanderContent {
     background-color: #ffffff !important;
     padding: 1.5rem !important;
@@ -482,16 +504,28 @@ Need/Supply 균형이 적절하여 별도의 구조적 점검이 필요하지 �
 
         elif page == 'policy_sim':
             st.markdown("<h1 class='page-title'>📈 자치구별 맞춤형 정책 제안</h1>", unsafe_allow_html=True)
-            
-            st.info("""
-💡 **데이터 기반 정책 우선순위**  
-각 자치구의 주요 취약 요인을 분석하여 **우선 개입이 필요한 영역**과  
-**구체적인 정책 방향**을 제시합니다.
-            """)
+
+            st.markdown("""
+            <div class="page-desc">
+                💡 <strong>데이터 기반 정책 우선순위</strong><br>
+                각 자치구의 주요 취약 요인을 분석하여 
+                <strong>우선 개입이 필요한 영역</strong>과 
+                <strong>구체적인 정책 방향</strong>을 제시합니다.
+            </div>
+            """, unsafe_allow_html=True)
+
             
             if os.path.exists(POLICY_PATH):
                 df_poly = pd.read_csv(POLICY_PATH)
-                selected_gu = st.selectbox("📍 자치구 선택", df_poly['district'].unique())
+                
+                # 자치구 선택 UI 개선
+                st.markdown("### 📍 자치구 선택")
+                selected_gu = st.selectbox(
+                    "분석할 자치구를 선택하세요", 
+                    df_poly['district'].unique(),
+                    label_visibility="collapsed"
+                )
+                
                 res = df_poly[df_poly['district'] == selected_gu].iloc[0]
                 
                 factor_map = {
@@ -507,7 +541,54 @@ Need/Supply 균형이 적절하여 별도의 구조적 점검이 필요하지 �
                     "basic_livelihood_recipients": "기초생활수급자 수"
                 }
 
-                st.success(f"### 📋 {selected_gu} 맞춤형 정책 제언")
+                # 주요 위험 요인 카드
+                st.markdown(f"### 🎯 {selected_gu} 주요 위험 요인 TOP 3")
+                
+                cols = st.columns(3)
+                badge_colors = ["#dc2626", "#f97316", "#fbbf24"]  # 빨강, 주황, 노랑
+                emoji_list = ["🔴", "🟠", "🟡"]
+                
+                for i in range(1, 4):
+                    factor_key = f'top{i}_factor'
+                    if factor_key in res:
+                        factor_raw = res[factor_key]
+                        factor_name = factor_map.get(factor_raw, factor_raw)
+                        
+                        with cols[i-1]:
+                            st.markdown(f"""
+                            <div style="background: linear-gradient(135deg, #ffffff, #f8fafc);
+                                        padding: 1.5rem;
+                                        border-radius: 12px;
+                                        border: 2px solid {badge_colors[i-1]};
+                                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                                        text-align: center;
+                                        min-height: 120px;
+                                        display: flex;
+                                        flex-direction: column;
+                                        justify-content: center;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">{emoji_list[i-1]}</div>
+                                <div style="background: {badge_colors[i-1]};
+                                            color: white;
+                                            padding: 0.25rem 0.75rem;
+                                            border-radius: 999px;
+                                            font-size: 0.875rem;
+                                            font-weight: 700;
+                                            display: inline-block;
+                                            margin: 0 auto 0.75rem;">
+                                    우선순위 {i}
+                                </div>
+                                <div style="font-size: 1.1rem;
+                                            font-weight: 700;
+                                            color: #0f172a;">
+                                    {factor_name}
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                
+                st.markdown("---")
+                
+                # 상세 정책 제안
+                st.markdown(f"### 📋 {selected_gu} 맞춤형 정책 제안")
                 
                 for i in range(1, 4):
                     factor_key = f'top{i}_factor'
@@ -518,12 +599,19 @@ Need/Supply 균형이 적절하여 별도의 구조적 점검이 필요하지 �
                         factor_name = factor_map.get(factor_raw, factor_raw)
                         policy_desc = res[policy_key]
                         
-                        with st.expander(f"**우선순위 {i}: {factor_name} 기반 정책**", expanded=(i==1)):
-                            st.markdown(f"🎯 **주요 타겟 지표:** {factor_name}")
-                            st.markdown("---")
+                        with st.expander(f"{emoji_list[i-1]} **우선순위 {i}: {factor_name} 기반 정책**", expanded=(i==1)):
+                            st.markdown(f"""
+                            <div style="background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+                                        padding: 1rem;
+                                        border-radius: 8px;
+                                        border-left: 4px solid {badge_colors[i-1]};
+                                        margin-bottom: 1rem;">
+                                <strong style="color: {badge_colors[i-1]};">🎯 주요 타겟 지표:</strong> {factor_name}
+                            </div>
+                            """, unsafe_allow_html=True)
                             
-                            policy_lines = policy_desc.split('\n')
                             st.markdown("**💡 정책 제언:**")
+                            policy_lines = policy_desc.split('\n')
                             for line in policy_lines:
                                 if line.strip():
                                     st.markdown(f"- {line.strip()}")
