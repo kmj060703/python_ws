@@ -13,7 +13,9 @@ pip install -r requirements.txt
 ### 실행 방법
 ```bash
 cd python_ws
+python src/analysis/main.py
 python -m streamlit run src/ui/ui.py
 ```
+
 
 
