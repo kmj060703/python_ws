@@ -1,4 +1,9 @@
 #charts_3.py
+# 본 파일은 정신건강 정책 분석 대시보드에서 사용되는
+# 주요 시각화 컴포넌트들을 함수 단위로 모듈화한 파일이다.
+#
+# 지도, 산점도, 레이더 차트, AI 기반 사각지대 분석 등
+# 정책 의사결정 지원을 위한 핵심 시각화를 담당한다.
 
 import folium
 import plotly.express as px
@@ -7,9 +12,13 @@ import pandas as pd
 import branca.colormap as cm
 import json
 
-# 1. MHVI 지도 (Need Index 시각화)
+# 1. MHVI 지도 시각화 (정신건강 취약 지수 / 인프라 분포)
+
+# 서울시 전체 영역이 화면에 균형 있게 표시되도록 지도 경계 설정
 def draw_mhvi_map(geo_data, data_df):
     seoul_bounds = [[37.42, 126.75], [37.70, 127.18]]
+    
+    # 보고서/행정용 시각화를 위해 사용자 인터랙션을 최소화한 지도 설정
     m = folium.Map(
         location=[37.5665, 126.9780],
         zoom_start=11,
@@ -21,16 +30,19 @@ def draw_mhvi_map(geo_data, data_df):
         tiles="cartodbpositron",
         attr=' '
     )
+    
+    # 지도 하단 Attribution 문구 제거 
     m.get_root().html.add_child(folium.Element("""
         <style>.leaflet-control-attribution { display: none !important; }</style>
     """))
     m.fit_bounds(seoul_bounds)
 
-    # 데이터 컬럼 자동 감지 및 설정
+    # 데이터 컬럼 자동 감지
+    # - Need_Index 존재 시: 정신건강 취약도 지도
+    # - 없을 경우: 인프라(center_count) 분포 지도
     if 'Need_Index' in data_df.columns:
         col_to_plot = "Need_Index"
         legend_title = "정신건강 취약 지수"
-        # 색상 스케일: 거의 흰색 → 아주 진한 주황/빨강 (차이 극대화)
         colors = ['#fffbeb', '#fef3c7', '#fde047', '#fb923c', '#f97316', '#dc2626', '#991b1b']
     else:
         col_to_plot = "center_count"
@@ -41,8 +53,10 @@ def draw_mhvi_map(geo_data, data_df):
         data_df = data_df.copy()
         data_df['name'] = data_df['district']
 
+    # 자치구명 기준으로 값 매핑
     data_dict = data_df.set_index('name')[col_to_plot].to_dict()
 
+    # GeoJSON 각 자치구에 대응되는 값 주입
     for feature in geo_data['features']:
         gu_name = feature['properties'].get('SIG_KOR_NM')
         if gu_name in data_dict:
@@ -50,10 +64,12 @@ def draw_mhvi_map(geo_data, data_df):
         else:
             feature['properties']['value'] = 0
 
+    # 데이터 분포 기반 색상 스케일 자동 보정
     vmin = data_df[col_to_plot].min()
     vmax = data_df[col_to_plot].max()
     colormap = cm.LinearColormap(colors=colors, vmin=vmin, vmax=vmax, caption=legend_title)
     
+    # 기본 지도 스타일 정의
     def style_function(feature):
         value = feature['properties'].get('value', 0)
         return {
@@ -63,6 +79,7 @@ def draw_mhvi_map(geo_data, data_df):
             'fillOpacity': 0.7
         }
 
+    # 마우스 오버 시 강조 효과
     def highlight_function(feature):
         return {
             'fillColor': '#ffffff',
@@ -71,6 +88,7 @@ def draw_mhvi_map(geo_data, data_df):
             'fillOpacity': 0.9,
         }
 
+    # GeoJSON 레이어 추가
     folium.GeoJson(
         geo_data,
         style_function=style_function,
@@ -86,7 +104,7 @@ def draw_mhvi_map(geo_data, data_df):
     colormap.add_to(m)
     return m
 
-# 2. Gap 분석 산점도
+# 2. 수요-공급 격차 산점도 (4사분면 분석)
 def draw_gap_scatter(df):
     if 'Need_Index' in df.columns and 'Supply_Index' in df.columns:
         fig = px.scatter(
@@ -118,6 +136,7 @@ def draw_gap_scatter(df):
             title="수요(위험도) vs 공급(인프라) 4사분면 분석"
         )
         
+        # 중앙값 기준 사분면 구분선
         median_need = df['Need_Index'].median()
         median_supply = df['Supply_Index'].median()
         
@@ -130,6 +149,7 @@ def draw_gap_scatter(df):
         fig.update_traces(marker=dict(size=12), textposition='top center')
         
     else:
+        # 데이터 부족 시 기본 산점도 대체 제공
         fig = px.scatter(
             df, x="center_count", y="center_count", 
             text="name", size="center_count", color="center_count",
@@ -140,7 +160,7 @@ def draw_gap_scatter(df):
         
     return fig
 
-# 3. 레이더 차트
+# 3. 자치구별 레이더 차트 (상대 비교)
 def draw_radar_chart(df, selected_gu):
     cols = {
         'welfare_budget_per_capita': '1인당 복지예산',
@@ -152,6 +172,7 @@ def draw_radar_chart(df, selected_gu):
     
     categories = list(cols.values())
     
+    # 지표 간 스케일 차이를 제거하기 위한 정규화 (0~10)
     df_norm = df.copy()
     for col in cols.keys():
         min_val = df[col].min()
@@ -161,6 +182,7 @@ def draw_radar_chart(df, selected_gu):
     target_data = df_norm[df_norm['district'] == selected_gu].iloc[0]
     values = [target_data[col] for col in cols.keys()]
     
+    # 레이더 차트 폐곡선 처리
     values += values[:1]
     categories += categories[:1]
     
@@ -195,7 +217,7 @@ def draw_radar_chart(df, selected_gu):
     )
     return fig
 
-# 4. AI 사각지대 바차트 (개선 버전)
+# 4. AI 기반 정책 사각지대 바차트
 def draw_ai_blindspot_bar(df_rank):
     fig = px.bar(
         df_rank.head(10), 
@@ -203,7 +225,7 @@ def draw_ai_blindspot_bar(df_rank):
         y='district', 
         orientation='h',
         color='Inefficiency', 
-        color_continuous_scale='Oranges',  # 빨강→주황으로 변경
+        color_continuous_scale='Oranges',
         labels={
             'Inefficiency': '사각지대 의심 지수', 
             'district': '자치구'
@@ -225,12 +247,13 @@ def draw_ai_blindspot_bar(df_rank):
     
     return fig
 
-# 5. SHAP 워터폴 차트 (개선 버전)
+# 5. SHAP 기반 정책 사각지대 기여 요인 분석
 def draw_shap_waterfall(df_shap, target_gu):
     filtered = df_shap[df_shap['district'] == target_gu]
     if filtered.empty:
         return None
 
+    # 영문 변수명을 정책 실무용 한글 용어로 매핑
     label_map = {
         "suicide_rate": "자살률",
         "depression_experience_rate": "우울감 경험률",
@@ -262,13 +285,13 @@ def draw_shap_waterfall(df_shap, target_gu):
     gu_data.columns = ['Effect']
     gu_data.index = [label_map.get(col, col) for col in gu_data.index]
 
-    # 🔥 핵심 방어 코드
+    # 실전 데이터 환경에서 발생 가능한 비수치값 방어
     gu_data['Effect'] = pd.to_numeric(gu_data['Effect'], errors='coerce')
     gu_data = gu_data.dropna(subset=['Effect'])
 
     gu_data = gu_data.sort_values(by='Effect')
 
-    # 색상 개선: 양수=주황, 음수=청록
+    # 음수(위험 완화) / 양수(위험 증가) 색상 구분
     colors = ['#14b8a6' if x < 0 else '#f97316' for x in gu_data['Effect']]
 
     fig = go.Figure()
@@ -314,7 +337,7 @@ def draw_shap_waterfall(df_shap, target_gu):
     return fig
     return fig
 
-# 6. TOP 10 바차트 (기본 유지)
+# 6. 인프라 상위 10개 자치구 바차트 (기본 분석용)
 def draw_top10_bar(df):
     top10 = df.nlargest(10, 'center_count')
     fig = px.bar(
@@ -326,9 +349,11 @@ def draw_top10_bar(df):
     fig.update_layout(xaxis_title="지역구", yaxis_title="센터 수")
     return fig
 
-# 7. 클러스터 지도 (기본 유지)
+# 7. 클러스터 지도 (탐색적 분석)
 def draw_cluster_map(geo_data, df):
     m = folium.Map(location=[37.5665, 126.9780], zoom_start=11, tiles="cartodbpositron")
+    
+    # 임시 클러스터 기준 (탐색용)
     df['cluster'] = df['center_count'] % 3 
     folium.Choropleth(
         geo_data=geo_data,

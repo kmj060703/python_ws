@@ -1,3 +1,9 @@
+# 서울시 정신건강 인사이트 플랫폼 (Streamlit 메인 앱)
+#
+# - 서울시 자치구별 정신건강 위험도(Need), 인프라(Supply),
+#   그리고 정책 사각지대를 시각화하고 정책 제안을 제공하는 웹 대시보드
+# - charts_3.py에 정의된 시각화 모듈을 호출하여 페이지별 분석을 구성
+
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
@@ -6,11 +12,16 @@ import os
 import pandas as pd
 import charts_3 as charts
 
+
+# 0. 고지 문구 및 지표 설명 (정책적 책임 명시)
+
+# 분석 결과가 인과관계나 확정적 결론이 아님을 명시 (정책 분석 필수 요소)
 DISCLAIMER = """
 ⚠️ 본 플랫폼의 모든 분석 결과는 **인과관계를 의미하지 않으며**  
 정책 검토를 위한 **참고용 분석 결과**입니다.
 """
 
+# Need / Supply / Gap 지수에 대한 개념 설명
 INDEX_DESC = """
 - **Need Index(정신건강 위험도 수준)**: 자살률, 우울감 경험률, 스트레스 인지율 등 주요 정신건강 위험 지표를 가중합하여 산출한 종합 위험 지수  
 - **Supply Index(인프라 지수)**: 의료, 복지, 문화, 체육 등 정신건강 관련 인프라 지표를 표준화한 뒤 가중합하여 산출한 공급 수준 지수  
@@ -18,21 +29,24 @@ INDEX_DESC = """
   (＋ 값일수록 need 대비 supply이가 부족한 지역 / - 값일수록 상대적 공급 여유 지역 )
 """
 
-# 1. 경로 설정
+# 1. 프로젝트 경로 설정
+# 현재 파일 기준으로 프로젝트 루트 디렉토리를 동적으로 계산
 current_file = os.path.abspath(__file__)
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(current_file)))
+
+# 원본 / 전처리 / 결과 데이터 경로 정의
 GEO_PATH = os.path.join(ROOT_DIR, "data", "raw", "seoul_municipalities.geojson")
 INFRA_PATH = os.path.join(ROOT_DIR, "data", "infra", "centers.csv")
 NEED_PATH = os.path.join(ROOT_DIR, "data", "processed", "need_tidy.csv")
 SUPPLY_PATH = os.path.join(ROOT_DIR, "data", "processed", "supply_tidy.csv")
 MHVI_PATH = os.path.join(ROOT_DIR, "data", "processed", "mhvi_final_result.csv")
 
-# 데이터 결과물 경로
+# AI 분석 및 정책 제언 결과물 경로
 RANK_PATH = os.path.join(ROOT_DIR, "data", "outputs", "tables", "ai_blindspot_ranking.csv")
 SHAP_PATH = os.path.join(ROOT_DIR, "data", "outputs", "tables", "ai_blindspot_shap.csv")
 POLICY_PATH = os.path.join(ROOT_DIR, "data", "outputs", "recommend_policy", "need_policy_recommendation_by_district.csv")
 
-# 2. 페이지 설정
+# 2. Streamlit 페이지 기본 설정
 st.set_page_config(
     page_title="서울시 정신건강 인사이트 플랫폼",
     page_icon="🧠",
@@ -40,15 +54,19 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 3. 세션 상태
+# 3. 세션 상태 관리 (페이지 네비게이션)
+# 최초 실행 시 홈 화면으로 설정
 if "current_page" not in st.session_state:
     st.session_state.current_page = "home"
 
+# URL 쿼리 파라미터를 통해 페이지 상태 유지
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.current_page = query_params["page"]
 
-# 4. CSS 스타일 (색상 개선 + expander 텍스트 수정)
+# 4. 전역 CSS 스타일 정의
+# - 카드형 UI 및 가독성 강화
+# - expander, selectbox 등 Streamlit 기본 UI 개선
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap');
@@ -251,7 +269,7 @@ header, footer, #MainMenu { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
-# 5. 데이터 로드
+# 5. 데이터 로드 함수 (캐싱 적용)
 @st.cache_data
 def load_data():
     geo, df, radar_df, mhvi_df = None, None, None, None
@@ -280,11 +298,13 @@ def load_data():
             
     return geo, df, radar_df, mhvi_df
 
+# 데이터 로드 실행
 geo_data, infra_data, radar_df, mhvi_df = load_data()
 
 
-# 6. 홈 화면
+# 6. 홈 화면 (메인 진입 페이지)
 if st.session_state.current_page == "home":
+    # 서비스 핵심 메시지
     st.markdown("""
     <div class="home-hero">
         <div class="home-title">서울시 정신건강 인사이트</div>
@@ -297,6 +317,7 @@ if st.session_state.current_page == "home":
     
     st.markdown("<div class='title-divider'></div>", unsafe_allow_html=True)
 
+    # 기능 카드 정의 (페이지 네비게이션 역할)
     cards = [
         ("mhvi", "🗺️", "지역별 정신건강 현황", "서울시 25개 자치구의 정신건강 지수 시각화"),
         ("gap", "📊", "수요-공급 격차 분석", "지역별 정신적 위험도 대비 인프라 공급의 불균형 진단"),
@@ -306,6 +327,7 @@ if st.session_state.current_page == "home":
         ("data", "📋", "전체 데이터 보기", "모든 자치구의 통합 데이터 테이블")
     ]
 
+    # 카드 UI 렌더링
     cols = st.columns(3)
     for i, (key, icon, title, desc) in enumerate(cards):
         with cols[i % 3]:
@@ -322,9 +344,9 @@ if st.session_state.current_page == "home":
             </form>
             """, unsafe_allow_html=True)
 
-# 7. 서브 페이지
-
+# 7. 서브 페이지 공통 레이아웃
 else:
+    # 홈으로 돌아가기 버튼
     col_back, _ = st.columns([1, 8])
     with col_back:
         st.markdown('<div class="back-button">', unsafe_allow_html=True)
@@ -334,6 +356,7 @@ else:
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # 데이터 존재 여부 확인
     if geo_data is None or infra_data is None:
         st.error("데이터를 불러올 수 없습니다. 데이터 파일 경로를 확인해주세요.")
     else:
