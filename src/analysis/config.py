@@ -48,16 +48,16 @@ SUPPLY_VARS = [
 
 # Need 가중치 (총합 1)
 WEIGHTS_NEED = {
-    'suicide_rate_norm': 0.12,
-    'depression_experience_rate_norm': 0.09,
-    'perceived_stress_rate_norm': 0.07,
-    'high_risk_drinking_rate_norm': 0.07,
-    'elderly_population_rate_norm': 0.10,
-    'single_households_norm': 0.08,
-    'basic_livelihood_recipients_norm': 0.07,
-    'unemployment_rate_norm': 0.15,
-    'unmet_medical_need_rate_norm': 0.14,
-    'old_dependency_ratio_norm': 0.11
+    'suicide_rate_norm': 0.25,
+    'depression_experience_rate_norm': 0.125,
+    'perceived_stress_rate_norm': 0.125,
+    'high_risk_drinking_rate_norm': 0.05,
+    'elderly_population_rate_norm': 0.05,
+    'single_households_norm': 0.10,
+    'basic_livelihood_recipients_norm': 0.125,
+    'unemployment_rate_norm': 0.125,
+    'unmet_medical_need_rate_norm': 0.10,
+    'old_dependency_ratio_norm': 0.05
 }
 
 # Supply 가중치 (총합 1)
@@ -66,22 +66,22 @@ WEIGHTS_SUPPLY = {
     'medical_institutions_count_norm': 0.20,
     'elderly_leisure_welfare_facilities_count_norm': 0.15,
     'in_home_elderly_welfare_facilities_count_norm': 0.15,
-    'parks_count_norm': 0.10,
-    'libraries_count_norm': 0.07,
-    'public_sports_facilities_count_norm': 0.07,
-    'cultural_satisfaction_norm': 0.03,
-    'welfare_budget_per_capita_norm': 0.03
+    'parks_count_norm': 0.04,
+    'libraries_count_norm': 0.02,
+    'public_sports_facilities_count_norm': 0.02,
+    'cultural_satisfaction_norm': 0.07,
+    'welfare_budget_per_capita_norm': 0.15
 }
 
 # 정책 시뮬레이션 시나리오
 POLICY_SCENARIO = {
     "welfare_budget_per_capita": ("pct", 0.10),
-    "cultural_satisfaction": ("add", 0.20),
-    "parks_count": ("add", 10),
+    "cultural_satisfaction": ("add", 0.15),
+    "parks_count": ("add", 4),
     "libraries_count": ("add", 2),
     "public_sports_facilities_count": ("add", 2),
-    "medical_institutions_count": ("add", 20),
+    "medical_institutions_count": ("add", 5),
     "health_promotion_centers_count": ("add", 1),
-    "elderly_leisure_welfare_facilities_count": ("add", 10),
-    "in_home_elderly_welfare_facilities_count": ("add", 5),
+    "elderly_leisure_welfare_facilities_count": ("add", 8),
+    "in_home_elderly_welfare_facilities_count": ("add", 4),
 }
