@@ -632,7 +632,60 @@ Need/Supply 균형이 적절하여 별도의 구조적 점검이 필요하지 �
                                 </div>
                             </div>
                             """, unsafe_allow_html=True)
+                # ========================================
+                # 자살률 구조적 동반성 참고 문구 
+                # ========================================
                 
+                # 1. 자살률과 동반성이 확인된 지표 정의 (고정값 - RandomForest 분석 과)
+                SUICIDE_RELATED_FACTORS = {
+                    "elderly_population_rate": "노인 인구 비율",
+                    "old_dependency_ratio": "노년 부양비",
+                    "unmet_medical_need_rate": "미충족 의료율"
+                }
+                
+                # 2. 현재 자치구의 TOP3 요인 추출
+                top_factors_raw = []
+                for i in range(1, 4):
+                    factor_key = f'top{i}_factor'
+                    if factor_key in res:
+                        top_factors_raw.append(res[factor_key])
+                
+                # 3. 동반성 지표와 교집합 확인
+                matched_factors = [
+                    factor for factor in top_factors_raw 
+                    if factor in SUICIDE_RELATED_FACTORS
+                ]
+                
+                # 4. 조건부 표시: 1개 이상 매칭되면 참고 문구 출력
+                if matched_factors:
+                    matched_names = [SUICIDE_RELATED_FACTORS[f] for f in matched_factors]
+                    
+                    # 여러 개일 경우 쉼표로 연결
+                    if len(matched_names) == 1:
+                        factors_display = f"<strong>{matched_names[0]}</strong>"
+                    elif len(matched_names) == 2:
+                        factors_display = f"<strong>{matched_names[0]}</strong>과 <strong>{matched_names[1]}</strong>"
+                    else:
+                        factors_display = ", ".join([f"<strong>{n}</strong>" for n in matched_names[:-1]]) + f" 및 <strong>{matched_names[-1]}</strong>"
+                    
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+                                border-left: 4px solid #0ea5e9;
+                                padding: 1.25rem 1.5rem;
+                                border-radius: 10px;
+                                margin-top: 1.5rem;
+                                margin-bottom: 1.5rem;
+                                box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);">
+                        <div style="color: #0f172a; line-height: 1.7; font-size: 0.95rem;">
+                            <strong style="color: #0369a1; font-size: 1rem;">🔎 해석 참고 (자살률 구조적 동반성)</strong><br>
+                            본 자치구의 주요 취약 요인 중 {factors_display}은(는)<br>
+                            자살률이 높은 지역에서 <b> 함께 높게 나타나는 구조적 동반성</b>을 지닌 지표입니다. <br>
+                            ※ 본 결과는 통계적 연관성을 의미하며, 인과관계를 뜻하지 않습니다.
+                            <b>정신건강 관점에서 우선적인 정책 검토가 필요한 지표</b>로 해석됩니다.
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
                 st.markdown("---")
                 
                 # 상세 정책 제안
