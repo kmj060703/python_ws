@@ -1,26 +1,26 @@
 ﻿district,top1_factor,top2_factor,top3_factor,policy_direction_1,policy_direction_2,policy_direction_3
-강남구,perceived_stress_rate,suicide_rate,depression_experience_rate,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대",휴식/여가 인프라(문화·체육·공원) 접근성 개선 + 커뮤니티 활동 촉진,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화
-강동구,unemployment_rate,depression_experience_rate,suicide_rate,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리,실업 스트레스 완화 위한 마음건강 패키지(상담+일자리 서비스) 결합,우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화
-강북구,high_risk_drinking_rate,elderly_population_rate,old_dependency_ratio,고위험 음주군 대상 단기개입(SBIRT) + 중독상담 연계,야간·회식문화 밀집 권역 중심 예방 캠페인 + 상담 접근성 강화,노인 고립·우울 예방: 방문/모니터링 + 여가·커뮤니티 프로그램 강화
-강서구,basic_livelihood_recipients,depression_experience_rate,single_households,경제취약층 대상 마음건강+복지 원스톱 연계(상담→지원제도 연결),주거·생계 불안 완화 지원과 정신건강 서비스 동시 제공(케이스관리),우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화
-관악구,single_households,unemployment_rate,suicide_rate,1인가구 고립 예방: 커뮤니티 프로그램/모임/공유공간 활성화,위기 신호(단절·경제·정서) 조기 발견 위한 생활접점 연계 강화,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리
-광진구,depression_experience_rate,perceived_stress_rate,suicide_rate,우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화,정신건강 인식개선 캠페인 + 상담 문턱(비용/낙인) 낮추는 서비스 확대,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대"
-구로구,unemployment_rate,suicide_rate,high_risk_drinking_rate,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리,실업 스트레스 완화 위한 마음건강 패키지(상담+일자리 서비스) 결합,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화
-금천구,suicide_rate,unemployment_rate,unmet_medical_need_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화,위기상담 접근성(야간/주말) 확장 + 응급연계(정신응급/119/병원) 프로토콜 정교화,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리
-노원구,basic_livelihood_recipients,depression_experience_rate,perceived_stress_rate,경제취약층 대상 마음건강+복지 원스톱 연계(상담→지원제도 연결),주거·생계 불안 완화 지원과 정신건강 서비스 동시 제공(케이스관리),우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화
-도봉구,depression_experience_rate,old_dependency_ratio,elderly_population_rate,우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화,정신건강 인식개선 캠페인 + 상담 문턱(비용/낙인) 낮추는 서비스 확대,"돌봄 부담 완화: 재가/방문 돌봄, 가족돌봄 지원 확대"
-동대문구,suicide_rate,high_risk_drinking_rate,basic_livelihood_recipients,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화,위기상담 접근성(야간/주말) 확장 + 응급연계(정신응급/119/병원) 프로토콜 정교화,고위험 음주군 대상 단기개입(SBIRT) + 중독상담 연계
-동작구,unemployment_rate,perceived_stress_rate,high_risk_drinking_rate,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리,실업 스트레스 완화 위한 마음건강 패키지(상담+일자리 서비스) 결합,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대"
-마포구,unmet_medical_need_rate,suicide_rate,depression_experience_rate,의료 접근성(야간·주말·이동/예약) 개선 + 취약층 진료비 지원/연계,지역 내 1차의료-정신건강 서비스 연계(동네의원/보건소/센터) 강화,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화
-서대문구,unmet_medical_need_rate,depression_experience_rate,perceived_stress_rate,의료 접근성(야간·주말·이동/예약) 개선 + 취약층 진료비 지원/연계,지역 내 1차의료-정신건강 서비스 연계(동네의원/보건소/센터) 강화,우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화
-서초구,depression_experience_rate,perceived_stress_rate,unemployment_rate,우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화,정신건강 인식개선 캠페인 + 상담 문턱(비용/낙인) 낮추는 서비스 확대,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대"
-성동구,suicide_rate,unemployment_rate,perceived_stress_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화,위기상담 접근성(야간/주말) 확장 + 응급연계(정신응급/119/병원) 프로토콜 정교화,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리
-성북구,perceived_stress_rate,high_risk_drinking_rate,depression_experience_rate,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대",휴식/여가 인프라(문화·체육·공원) 접근성 개선 + 커뮤니티 활동 촉진,고위험 음주군 대상 단기개입(SBIRT) + 중독상담 연계
-송파구,perceived_stress_rate,depression_experience_rate,basic_livelihood_recipients,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대",휴식/여가 인프라(문화·체육·공원) 접근성 개선 + 커뮤니티 활동 촉진,우울 고위험군 선별검사(학교/직장/동주민센터 연계) + 상담 바우처/치료연계 강화
-양천구,unemployment_rate,basic_livelihood_recipients,perceived_stress_rate,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리,실업 스트레스 완화 위한 마음건강 패키지(상담+일자리 서비스) 결합,경제취약층 대상 마음건강+복지 원스톱 연계(상담→지원제도 연결)
-영등포구,perceived_stress_rate,unemployment_rate,single_households,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대",휴식/여가 인프라(문화·체육·공원) 접근성 개선 + 커뮤니티 활동 촉진,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리
-용산구,unemployment_rate,high_risk_drinking_rate,depression_experience_rate,구직·재취업 지원(훈련/매칭/상담) 강화 + 청년/중장년 타깃 프로그램 분리,실업 스트레스 완화 위한 마음건강 패키지(상담+일자리 서비스) 결합,고위험 음주군 대상 단기개입(SBIRT) + 중독상담 연계
-은평구,basic_livelihood_recipients,unmet_medical_need_rate,unemployment_rate,경제취약층 대상 마음건강+복지 원스톱 연계(상담→지원제도 연결),주거·생계 불안 완화 지원과 정신건강 서비스 동시 제공(케이스관리),의료 접근성(야간·주말·이동/예약) 개선 + 취약층 진료비 지원/연계
-종로구,suicide_rate,perceived_stress_rate,unemployment_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화,위기상담 접근성(야간/주말) 확장 + 응급연계(정신응급/119/병원) 프로토콜 정교화,"직장/생활 스트레스 완화 프로그램(마음건강 교육, 스트레스 관리 코칭) 확대"
-중구,suicide_rate,elderly_population_rate,old_dependency_ratio,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화,위기상담 접근성(야간/주말) 확장 + 응급연계(정신응급/119/병원) 프로토콜 정교화,노인 고립·우울 예방: 방문/모니터링 + 여가·커뮤니티 프로그램 강화
-중랑구,suicide_rate,basic_livelihood_recipients,elderly_population_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) + 즉시연계 체계 강화,위기상담 접근성(야간/주말) 확장 + 응급연계(정신응급/119/병원) 프로토콜 정교화,경제취약층 대상 마음건강+복지 원스톱 연계(상담→지원제도 연결)
+강남구,suicide_rate,perceived_stress_rate,depression_experience_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,직장·생활 스트레스 완화 프로그램 확대
+강동구,suicide_rate,unemployment_rate,depression_experience_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,구직·재취업 지원과 정신건강 서비스 결합
+강북구,suicide_rate,perceived_stress_rate,basic_livelihood_recipients,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,직장·생활 스트레스 완화 프로그램 확대
+강서구,suicide_rate,basic_livelihood_recipients,depression_experience_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,경제취약계층 대상 정신건강·복지 통합 지원
+관악구,suicide_rate,unemployment_rate,single_households,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,구직·재취업 지원과 정신건강 서비스 결합
+광진구,suicide_rate,depression_experience_rate,perceived_stress_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,우울 고위험군 선별검사 및 상담·치료 연계 강화
+구로구,suicide_rate,unemployment_rate,depression_experience_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,구직·재취업 지원과 정신건강 서비스 결합
+금천구,suicide_rate,unemployment_rate,unmet_medical_need_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,구직·재취업 지원과 정신건강 서비스 결합
+노원구,suicide_rate,basic_livelihood_recipients,depression_experience_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,경제취약계층 대상 정신건강·복지 통합 지원
+도봉구,suicide_rate,depression_experience_rate,unemployment_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,우울 고위험군 선별검사 및 상담·치료 연계 강화
+동대문구,suicide_rate,basic_livelihood_recipients,perceived_stress_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,경제취약계층 대상 정신건강·복지 통합 지원
+동작구,suicide_rate,unemployment_rate,perceived_stress_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,구직·재취업 지원과 정신건강 서비스 결합
+마포구,suicide_rate,depression_experience_rate,unemployment_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,우울 고위험군 선별검사 및 상담·치료 연계 강화
+서대문구,depression_experience_rate,perceived_stress_rate,unmet_medical_need_rate,우울 고위험군 선별검사 및 상담·치료 연계 강화,생활권 기반 찾아가는 심리 지원 서비스 확대,직장·생활 스트레스 완화 프로그램 확대
+서초구,depression_experience_rate,perceived_stress_rate,unemployment_rate,우울 고위험군 선별검사 및 상담·치료 연계 강화,생활권 기반 찾아가는 심리 지원 서비스 확대,직장·생활 스트레스 완화 프로그램 확대
+성동구,suicide_rate,unemployment_rate,perceived_stress_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,구직·재취업 지원과 정신건강 서비스 결합
+성북구,suicide_rate,perceived_stress_rate,depression_experience_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,직장·생활 스트레스 완화 프로그램 확대
+송파구,perceived_stress_rate,depression_experience_rate,suicide_rate,직장·생활 스트레스 완화 프로그램 확대,여가·문화·커뮤니티 인프라 접근성 개선,우울 고위험군 선별검사 및 상담·치료 연계 강화
+양천구,suicide_rate,unemployment_rate,basic_livelihood_recipients,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,구직·재취업 지원과 정신건강 서비스 결합
+영등포구,perceived_stress_rate,unemployment_rate,single_households,직장·생활 스트레스 완화 프로그램 확대,여가·문화·커뮤니티 인프라 접근성 개선,구직·재취업 지원과 정신건강 서비스 결합
+용산구,unemployment_rate,suicide_rate,depression_experience_rate,구직·재취업 지원과 정신건강 서비스 결합,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화
+은평구,suicide_rate,basic_livelihood_recipients,unemployment_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,경제취약계층 대상 정신건강·복지 통합 지원
+종로구,suicide_rate,perceived_stress_rate,unemployment_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,직장·생활 스트레스 완화 프로그램 확대
+중구,suicide_rate,depression_experience_rate,perceived_stress_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,우울 고위험군 선별검사 및 상담·치료 연계 강화
+중랑구,suicide_rate,basic_livelihood_recipients,perceived_stress_rate,고위험군 조기발견(게이트키퍼/위기신호 모니터링) 및 정신건강센터 기능 강화,24시간 위기상담 접근성 확대 및 정신응급 연계 프로토콜 정교화,경제취약계층 대상 정신건강·복지 통합 지원
