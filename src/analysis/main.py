@@ -5,16 +5,19 @@ main.py
 
 역할 요약:
 - MHVI 프로젝트 전체 분석 파이프라인을 순차적으로 실행
-- 데이터 로드 → 정규화 → 지수 계산 → 격차 분석 → 시각화 → AI 진단
+- 데이터 로드 → 정규화 → 지수 계산 → 격차 분석 → 시각화 → AI 진단 → 정책 제안
   까지 모든 단계를 한 번에 묶는 오케스트레이터(Orchestrator)
 
 이 파일 하나만 실행하면:
 → 모든 결과 CSV 생성
 → 4사분면 시각화 출력
 → AI 기반 사각지대 분석까지 완료
+→ Need 기반 정책 제안 생성
+→ 자살률-Need 지표 동반성 분석 완료
 """
 from config import OUTPUT_DIR
 from data_loader import load_data, normalize_data
+from need_driver import run_need_driver_analysis
 from index_calculator import (
     calculate_need_index,
     calculate_supply_index,
@@ -23,6 +26,7 @@ from index_calculator import (
 )
 from visualization import plot_quadrant_chart
 from ai_diagnosis import run_ai_diagnosis
+from tree_based_need_analysis import run_tree_based_analysis
 
 
 def main():
@@ -44,6 +48,8 @@ def main():
     7. 최종 결과 CSV 저장
     8. 4사분면 시각화
     9. AI 기반 사각지대 진단
+    10. Need 기반 정책 제안 생성
+    11. 자살률-Need 지표 동반성 분석 (RandomForest + SHAP)
     """
 
     # =====================================================
@@ -139,7 +145,56 @@ def main():
     print("\n" + "=" * 60)
     print("✅ 전체 파이프라인 완료!")
     print("=" * 60)
+    
+    # =====================================================
+    # 10. Need 기반 정책 제안 생성
+    # =====================================================
+    print("\n" + "=" * 60)
+    print("🔥 정책 제안 단계 진입")
+    print("=" * 60)
 
+    policy_output_dir = OUTPUT_DIR.parent / "recommend_policy"
+    policy_output_dir.mkdir(parents=True, exist_ok=True)
+
+    policy_df = run_need_driver_analysis(df_need_norm)
+
+    policy_df.to_csv(
+        policy_output_dir / "need_policy_recommendation_by_district.csv",
+        index=False,
+        encoding="utf-8-sig"
+    )
+    
+    print("\n📌 Need 기반 정책 제안 생성 완료")
+    print(f"📁 저장 위치: {policy_output_dir}")
+
+    # =====================================================
+    # 11. 자살률-Need 지표 동반성 분석
+    # =====================================================
+    print("\n" + "=" * 60)
+    print("🌲 자살률-Need 지표 동반성 분석 (RandomForest + SHAP)")
+    print("=" * 60)
+    
+    # tree_based_need_analysis 실행
+    # 이 함수는 내부에서 모든 출력을 처리하므로 반환값 없음
+    run_tree_based_analysis()
+    
+    print("\n📌 자살률-Need 지표 동반성 분석 완료")
+
+    # =====================================================
+    # 최종 완료 메시지
+    # =====================================================
+    print("\n" + "=" * 60)
+    print("🎊 모든 분석이 완료되었습니다!")
+    print("=" * 60)
+    print("\n생성된 결과물:")
+    print("  1. MHVI 최종 결과 (mhvi_final_result.csv)")
+    print("  2. 4사분면 시각화")
+    print("  3. AI 사각지대 진단")
+    print("  4. Need 기반 정책 제안")
+    print("  5. RandomForest Feature Importance")
+    print("  6. SHAP 분석 결과")
+    print("  7. 자살률 예측 및 잔차 분석")
+    print("=" * 60 + "\n")
 
 
 # 이 파일을 직접 실행했을 때만 main() 실행
