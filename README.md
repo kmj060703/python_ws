@@ -15,8 +15,9 @@ pip install -r requirements.txt
 cd python_ws
 python src/data/analysis.py
 python src/analysis/main.py
-python -m streamlit run src/ui/ui.py
+python -m streamlit run src/ui/ui_3.py
 ```
+
 
 
 
